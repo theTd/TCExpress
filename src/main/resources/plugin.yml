@@ -1,0 +1,4 @@
+name: ${project.name}
+main: org.totemcraft.bukkitplugin.TCExpress.TCExpressPlugin
+version: ${project.version}
+author: i@thetd.me
