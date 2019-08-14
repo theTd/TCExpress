@@ -15,15 +15,36 @@ import org.bukkit.material.Rails;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class TCExpressPlugin extends JavaPlugin implements Listener {
     private final static double MAX_SPEED = 2;
     private final static int BUFFER_LENGTH = 5;
     private final static int ADJUST_LENGTH = 20;
     private final static double NORMAL_SPEED = 0.4;
 
+    private final Set<String> effectiveWorlds = new HashSet<>();
+
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        loadEffectiveWorlds();
+        if (effectiveWorlds.isEmpty()) {
+            getLogger().warning("no effective worlds defined, plugin may not work.");
+        }
+
         getServer().getPluginManager().registerEvents(this, this);
+    }
+
+    private void loadEffectiveWorlds() {
+        List<String> list = getConfig().getStringList("effective_worlds");
+        if (list != null) {
+            for (String w : list) {
+                effectiveWorlds.add(w.toLowerCase());
+            }
+        }
     }
 
     @Override
@@ -42,6 +63,8 @@ public class TCExpressPlugin extends JavaPlugin implements Listener {
     @EventHandler
     void onMove(VehicleMoveEvent e) {
         if (!(e.getVehicle() instanceof Minecart)) return;
+        if (!effectiveWorlds.contains(e.getVehicle().getWorld().getName().toLowerCase())) return;
+
         Minecart minecart = ((Minecart) e.getVehicle());
         Entity passenger = Iterables.getFirst(minecart.getPassengers(), null);
         if (passenger == null || passenger.getType() != EntityType.PLAYER) return;
