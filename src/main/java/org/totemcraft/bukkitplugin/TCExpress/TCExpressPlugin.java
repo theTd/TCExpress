@@ -20,10 +20,11 @@ import java.util.List;
 import java.util.Set;
 
 public class TCExpressPlugin extends JavaPlugin implements Listener {
-    private final static double MAX_SPEED = 2;
     private final static int BUFFER_LENGTH = 5;
     private final static int ADJUST_LENGTH = 20;
     private final static double NORMAL_SPEED = 0.4;
+
+    private double maxSpeed = 2;
 
     private final Set<String> effectiveWorlds = new HashSet<>();
 
@@ -34,6 +35,8 @@ public class TCExpressPlugin extends JavaPlugin implements Listener {
         if (effectiveWorlds.isEmpty()) {
             getLogger().warning("no effective worlds defined, plugin may not work.");
         }
+
+        maxSpeed = NORMAL_SPEED * getConfig().getDouble("mul", 2);
 
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -120,7 +123,7 @@ public class TCExpressPlugin extends JavaPlugin implements Listener {
 
         double s = (double) freeLength / ADJUST_LENGTH;
         if (s > 1) s = 1;
-        double speed = NORMAL_SPEED + (MAX_SPEED - NORMAL_SPEED) * s;
+        double speed = NORMAL_SPEED + (maxSpeed - NORMAL_SPEED) * s;
         minecart.setMaxSpeed(speed);
     }
 
